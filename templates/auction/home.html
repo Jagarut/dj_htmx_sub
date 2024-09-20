@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+    {% block content %}
+
+        {% include "auction/navbar.html" %}
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <h1 class="text-3xl font-bold text-gray-900 mb-6">Active Auctions</h1>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Auction Item 1 -->
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+                    <img class="w-full h-48 object-cover" src="/api/placeholder/300/200" alt="Vintage Watch">
+                    <div class="p-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Vintage Watch</h2>
+                        <p class="text-gray-600 mb-4">A beautiful antique timepiece from the 1920s.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-indigo-600">$150.00</span>
+                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                Bid Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auction Item 2 -->
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+                    <img class="w-full h-48 object-cover" src="/api/placeholder/300/200" alt="Modern Art Painting">
+                    <div class="p-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Modern Art Painting</h2>
+                        <p class="text-gray-600 mb-4">Abstract canvas painting by up-and-coming artist.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-indigo-600">$500.00</span>
+                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                Bid Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auction Item 3 -->
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+                    <div class="p-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Rare Comic Book</h2>
+                        <p class="text-gray-600 mb-4">First edition of a classic superhero comic.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-indigo-600">$1,000.00</span>
+                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                Bid Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+        {% include "auction/footer.html" %}
+    
+    {% endblock content %}
+
