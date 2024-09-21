@@ -2,9 +2,6 @@
 {% load static %}
 
     {% block content %}
-
-        {% include "auction/navbar.html" %}
-
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div class="px-4 py-6 sm:px-0">
@@ -12,7 +9,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Auction Items -->
                 {% for listing in listings %}
-                
+                <a href="{% url 'listing_detail' listing.pk %}">
                 <div class="bg-white overflow-hidden shadow-sm rounded-lg">
                     <img class="w-full h-48 object-cover" src="{{ listing.image.url }}" alt="{{ listing.title }}">
                     <div class="p-4">
@@ -26,13 +23,10 @@
                         </div>
                     </div>
                 </div>
-
+                </a>
                 {% endfor %}
             </div>
         </div>
     </main>
-    
-        {% include "auction/footer.html" %}
-    
     {% endblock content %}
 
