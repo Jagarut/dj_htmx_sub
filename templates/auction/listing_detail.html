@@ -1,61 +1,97 @@
-{% extends "base.html" %}
+{% extends "base.html" %} 
 
-{% block title %}
-    {{ listing.title }} - AuctionHub
-{% endblock title %}
+{% block title %} {{ listing.title }} - AuctionHub {%endblock title %} 
 
 {% block content %}
+{% if messages %}
+  {% include "auction/utils/messages_snipet.html" %}
+{% endif %}
+
 <div class="bg-gray-100 min-h-screen" x-data="{ showBidForm: false }">
-    <div class="container mx-auto p-4 max-w-4xl">
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div class="bg-blue-600 text-white py-4 px-6">
-                <h1 class="text-3xl font-bold">{{ listing.title }}</h1>
-                <p class="text-blue-200 mt-2">Listed by {{ listing.seller }}</p>
+  <div class="container mx-auto p-4 max-w-4xl">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="bg-blue-600 text-white py-4 px-6">
+        <h1 class="text-3xl font-bold">{{ listing.title }}</h1>
+        <p class="text-blue-200 mt-2">Listed by {{ listing.seller }}</p>
+      </div>
+
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <img
+              src="{{ listing.image.url }}"
+              alt="{{ listing.title }}"
+              class="w-full rounded-lg shadow-md"
+            />
+          </div>
+          <div class="space-y-4">
+            <div>
+              <h2 class="text-2xl font-semibold text-gray-800">
+                Current Bid: ${{ listing.current_price }}
+              </h2>
+              <p class="text-gray-600">{{ listing.bids.count }} bids</p>
             </div>
-            
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="w-full rounded-lg shadow-md">
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <h2 class="text-2xl font-semibold text-gray-800">Current Bid: ${{ listing.current_price }}</h2>
-                            <p class="text-gray-600">{{ listing.bids.count }} bids</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-700"><strong>Time Left:</strong> {{ listing.time_left }}</p>
-                            <p class="text-gray-700"><strong>End Date:</strong> {{ listing.end_date }}</p>
-                        </div>
-                        <button 
-                            @click="showBidForm = !showBidForm"
-                            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-                        >
-                            Place Bid
-                        </button>
-                        <div x-show="showBidForm" class="mt-4">
-                            <form class="space-y-4">
-                                <div>
-                                    <label for="bid_amount" class="block text-sm font-medium text-gray-700">Your Bid</label>
-                                    <input type="number" id="bid_amount" name="bid_amount" step="0.01" min="{{ listing.current_bid }}" 
-                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                </div>
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
-                                    Submit Bid
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-8">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Item Description</h3>
-                    <p class="text-gray-700">{{ listing.description }}</p>
-                </div>
-                
-                
+            <div>
+              <p class="text-gray-700">
+                <strong>Time Left:</strong> {{ listing.time_left }}
+              </p>
+              <p class="text-gray-700">
+                <strong>End Date:</strong> {{ listing.end_date }}
+              </p>
             </div>
+            <button
+              @click="showBidForm = !showBidForm; if(showBidForm) $nextTick(() => $refs.bidInput.focus())"
+       
+              class="bg-green-500 hover:bg-green-600 text-white font-bold py-2
+              px-4 rounded transition duration-300 ease-in-out transform
+              hover:scale-105 focus:outline-none focus:ring-2
+              focus:ring-green-500 focus:ring-opacity-50" > Place Bid
+            </button>
+            <div x-show="showBidForm" class="mt-4">
+              <form class="space-y-4" method="post" action="{% url 'place_bid' listing.pk %}">
+              {% csrf_token %}
+                <div>
+                  <label
+                    for="bid_amount"
+                    class="block text-sm font-medium text-gray-700"
+                    >Your Bid</label
+                  >
+                  <input
+                    x-ref="bidInput"
+                    type="number"
+                    id="bid_amount"
+                    name="bid_amount"
+                    step="0.01"
+                    min="{{ listing.current_bid }}"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+                >
+                  Submit Bid
+                </button>
+              </form>
+            </div>
+                {% include "auction/snippets/watchlist_button.html" %}
+          </div>
         </div>
+
+        <div class="mt-8">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">
+            Item Description
+          </h3>
+          <p class="text-gray-700">{{ listing.description }}</p>
+        </div>
+      </div>
+    <div class="container mx-auto p-4 max-w-4xl flex items-center justify-center">
+      <a href="{% url 'watchlist' %}"
+        class="bg-blue-600 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+        ><span class="text-2xl">Ver artículos en seguimiento</span>
+      </a>
     </div>
+    </div>
+  </div>
 </div>
 {% endblock content %}

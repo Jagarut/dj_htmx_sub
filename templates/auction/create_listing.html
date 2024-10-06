@@ -1,58 +1,78 @@
-{% extends "base.html" %}
+{% extends "base.html" %} 
 
-{% block title %}
-    Create New Listing - AuctionHub
-{% endblock title %}
+{% block title %} Create New Listing - AuctionHub {%endblock title %} 
 
 {% block content %}
-
-
 <div class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="container mx-auto p-4 max-w-2xl" x-data="{ showHelp: {} }">
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div class="bg-blue-600 text-white py-4 px-6">
-                <h1 class="text-3xl font-bold">Create New Listing</h1>
-                <p class="text-blue-200 mt-2">Fill in the details to create your auction listing</p>
+  <div class="container mx-auto p-4 max-w-2xl" x-data="{ showHelp: {} }">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="bg-blue-600 text-white py-4 px-6">
+        <h1 class="text-3xl font-bold">Create New Listing</h1>
+        <p class="text-blue-200 mt-2">
+          Fill in the details to create your auction listing
+        </p>
+      </div>
+      <form
+        method="post"
+        enctype="multipart/form-data"
+        class="px-6 py-8 space-y-6"
+      >
+        {% csrf_token %} {% for field in form %}
+        <div class="relative">
+          <label
+            class="block text-gray-700 text-sm font-semibold mb-2"
+            for="{{ field.id_for_label }}"
+          >
+            {{ field.label }} {% if field.help_text %}
+            <i
+              class="fas fa-question-circle text-blue-500 ml-1 cursor-pointer"
+              @click="showHelp['{{ field.name }}'] = !showHelp['{{ field.name }}']"
+            ></i>
+            {% endif %}
+          </label>
+          <div class="relative">
+            {{ field }} {% if field.help_text %}
+            <div
+              x-show="showHelp['{{ field.name }}']"
+              class="mt-2 text-sm text-gray-600 bg-blue-50 p-2 rounded"
+            >
+              {{ field.help_text }}
             </div>
-            <form method="post" enctype="multipart/form-data" class="px-6 py-8 space-y-6">
-                {% csrf_token %}
-                {% for field in form %}
-                    <div class="relative">
-                        <label class="block text-gray-700 text-sm font-semibold mb-2" for="{{ field.id_for_label }}">
-                            {{ field.label }}
-                            {% if field.help_text %}
-                                <i class="fas fa-question-circle text-blue-500 ml-1 cursor-pointer" 
-                                   @click="showHelp['{{ field.name }}'] = !showHelp['{{ field.name }}']"></i>
-                            {% endif %}
-                        </label>
-                        <div class="relative">
-                            {{ field }}
-                            {% if field.help_text %}
-                                <div x-show="showHelp['{{ field.name }}']" class="mt-2 text-sm text-gray-600 bg-blue-50 p-2 rounded">
-                                    {{ field.help_text }}
-                                </div>
-                            {% endif %}
-                        </div>
-                        {% for error in field.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-                <div class="mt-8">
-                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" type="submit">
-                        Create Listing
-                    </button>
-                </div>
-            </form>
+            {% endif %}
+          </div>
+          {% for error in field.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+          {% endfor %}
         </div>
+        {% endfor %}
+        <div class="mt-8">
+          <button
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            type="submit"
+          >
+            Create Listing
+          </button>
+        </div>
+      </form>
     </div>
-    <script>
-        // Add custom styling to form inputs
-        document.querySelectorAll('input, select, textarea').forEach(el => {
-            el.classList.add('w-full', 'px-3', 'py-2', 'border', 'border-gray-300', 'rounded-lg', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:border-transparent');
-        });
-    </script>
+  </div>
+  <script>
+    // Add custom styling to form inputs
+    document.querySelectorAll("input, select, textarea").forEach((el) => {
+      el.classList.add(
+        "w-full",
+        "px-3",
+        "py-2",
+        "border",
+        "border-gray-300",
+        "rounded-lg",
+        "focus:outline-none",
+        "focus:ring-2",
+        "focus:ring-blue-500",
+        "focus:border-transparent"
+      );
+    });
+  </script>
 </div>
-
 
 {% endblock content %}

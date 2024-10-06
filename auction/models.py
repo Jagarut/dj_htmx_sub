@@ -4,15 +4,11 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator
 
 class AuctionListing(models.Model):
-    CATEGORY_CHOICES = [
-        ('ART', 'Art'),
-        ('ELECTRONICS', 'Electronics'),
-        ('FASHION', 'Fashion'),
-        ('HOME', 'Home & Garden'),
-        ('SPORTS', 'Sports'),
-        ('TOYS', 'Toys & Hobbies'),
-        ('VEHICLES', 'Vehicles'),
-        ('OTHER', 'Other'),
+    CATEGORY_CHOICES = [ 
+        ('PROTECCIONES', 'Protecciones'), 
+        ('ENTRENAMIENTO', 'Entrenamiento'), 
+        ('ROPA', 'Ropa'), 
+        ('OTROS', 'Otros'), 
     ]
 
     title = models.CharField(max_length=200)
@@ -56,6 +52,17 @@ class AuctionListing(models.Model):
         return timezone.now() > self.end_date
 
     def place_bid(self, user, amount):
+        """
+        Place a bid on the auction.
+
+        Args:
+            user (User): The user placing the bid.
+            amount (Decimal): The amount of the bid.
+
+        Raises:
+            ValueError: If the auction is not active or has ended.
+            ValueError: If the bid is not higher than the current price.
+        """
         if not self.is_active or self.is_ended:
             raise ValueError("This auction is not active or has ended.")
         if amount <= self.current_price:

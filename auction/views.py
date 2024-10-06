@@ -1,14 +1,21 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from django.contrib import messages
 from django.utils import timezone
+from .utils import item_in_watchlist
 from .forms import CreateListingForm
-from .models import AuctionListing
+from .models import AuctionListing, Bid, Comment, WatchList
 
 # Create your views here.
 def home(request):
     listings = AuctionListing.objects.all()
-    context = {'listings': listings}
+    # print('listingssssss:', listings)
+    context = {
+        'listings': listings,
+        'title': 'Active Auctions'
+    }
     return render(request, 'auction/home.html', context)
 
 @login_required
@@ -44,5 +51,88 @@ def create_listing(request):
 
 def listing_detail(request, pk):
     listing = AuctionListing.objects.get(pk=pk)
+    watchlist = WatchList.objects.get(user=request.user)
+    watch_list = watchlist.items.all()
     
-    return render(request, 'auction/listing_detail.html', {'listing': listing})
+    context = item_in_watchlist(listing, watch_list, pk)
+    context.update({
+        'listing': listing,
+    })
+
+        
+    # context = {
+    #     'listing': listing,
+    #     'text_button': text_button,
+    #     'color': color,
+    #     'url': url
+    # }
+    
+    return render(request, 'auction/listing_detail.html', context)
+
+def categories(request, category):
+    print(category)
+    listings = AuctionListing.objects.filter(category=category.upper()) 
+    print(listings)
+    return render(request, 'auction/home.html', {'listings': listings})
+
+def place_bid(request, pk):
+    
+    listing = AuctionListing.objects.get(pk=pk)
+    
+    if request.method == 'POST':
+        try:
+            listing.place_bid(request.user, float(request.POST['bid_amount']))
+            messages.success(request, 'Your bid has been placed successfully!')
+            return redirect('home')
+        except Exception as e:
+            messages.error(request, e)
+            return redirect('listing_detail', pk=pk)
+        
+def watchlist(request):
+    watchlist = WatchList.objects.get(user=request.user)
+    watch_list = watchlist.items.all()
+    
+    context = {
+        'listings': watch_list,
+        'title': 'Watchlist',
+    }
+    return render(request, 'auction/home.html', context)
+
+
+def add_to_watchlist(request, pk):
+    listing = AuctionListing.objects.get(pk=pk)
+    listing.add_to_watchlist(request.user)
+    
+    watchlist = WatchList.objects.get(user=request.user)
+    watchlist.items.add(listing)
+    
+    watchlist_items = WatchList.objects.filter(user=request.user)
+    print(watchlist_items)
+
+    # print(watchlist)
+    # print(watchlist.items.count())
+    # print(watchlist.items.all())
+    # for item in watchlist.items.all():
+    #     print(item.title)
+    #     print(item.seller)
+    #     print(item.watchers)
+    # print(watchlist.user.username) 
+    # print(listing.watchers)                                                                                  
+    
+    # print('wacthers', listing.watchers)
+    watch_list = watchlist.items.all()
+        
+    context = item_in_watchlist(listing, watch_list, pk)
+    # print(request.headers)
+    # print(request.url)
+    return render(request, 'auction/snippets/watchlist_button.html', context)
+
+def remove_from_watchlist(request, pk):
+    listing = AuctionListing.objects.get(pk=pk)
+    # listing.remove_from_watchlist(request.user)
+    WatchList.objects.get(user=request.user).items.remove(listing)
+    watch_list = WatchList.objects.all()
+    
+    context = item_in_watchlist(listing, watch_list, pk)
+    return render(request, 'auction/snippets/watchlist_button.html', context)
+
