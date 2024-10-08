@@ -39,6 +39,7 @@
                 <strong>End Date:</strong> {{ listing.end_date }}
               </p>
             </div>
+            {% if user.is_authenticated %}
             <button
               @click="showBidForm = !showBidForm; if(showBidForm) $nextTick(() => $refs.bidInput.focus())"
        
@@ -75,6 +76,14 @@
               </form>
             </div>
                 {% include "auction/snippets/watchlist_button.html" %}
+            {% else %}
+              <button>
+              <a href="{% url 'account_login' %}?next={{ request.path }}" 
+                 class="btn bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4  rounded transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                 Need to login to bid
+              </a>  
+              </button>          
+            {% endif %}
           </div>
         </div>
 
@@ -85,12 +94,14 @@
           <p class="text-gray-700">{{ listing.description }}</p>
         </div>
       </div>
-    <div class="container mx-auto p-4 max-w-4xl flex items-center justify-center">
-      <a href="{% url 'watchlist' %}"
-        class="bg-blue-600 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
-        ><span class="text-2xl">Ver artículos en seguimiento</span>
-      </a>
-    </div>
+    {% if user.is_authenticated %}  
+      <div class="container mx-auto p-4 max-w-4xl flex items-center justify-center">
+        <a href="{% url 'watchlist' %}"
+          class="bg-blue-600 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+          ><span class="text-2xl">Ver artículos en seguimiento</span>
+        </a>
+      </div>
+    {% endif %}
     </div>
   </div>
 </div>
