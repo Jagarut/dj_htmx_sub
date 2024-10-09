@@ -1,9 +1,17 @@
-{% extends "base.html" %}
+{% extends "auction/layout.html" %}
 
-<div class="min-h-screen flex flex-col items-center justify-center">
-    <div class="bg-white rounded-2xl md:drop-shadow-2xl shadow-black w-3/4 p-8 md:w-1/2">
-    {% block content %} 
-    {% endblock %}
 
-    </div>
-</div>
+{% block layout %} 
+    {% include "auction/navbar.html" %}
+    <content class="block max-w-3xl mx-auto my-12 px-6">
+        <div class="card p-8 !pb-10">
+            {% block content %}
+            
+            {% endblock content %}
+        </div>
+    </content>
+    {% include "auction/footer.html" %}
+{% endblock layout %}
+
+
+
