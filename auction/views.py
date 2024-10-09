@@ -121,3 +121,17 @@ def remove_from_watchlist(request, pk):
     context = item_in_watchlist(listing, watch_list, pk)
     return render(request, 'auction/snippets/watchlist_button.html', context)
 
+def search(request):
+    query = request.GET.get('search', '')
+
+    listings = AuctionListing.objects.filter(title__icontains=query)
+    
+    context = {
+        'listings': listings,
+        'title': 'Search Results'
+    }
+    if not listings:
+        context['title'] = 'No results found'
+
+    return render(request, 'auction/home.html', context)
+    

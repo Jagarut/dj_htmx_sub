@@ -10,6 +10,7 @@ urlpatterns = [
      path('watchlist/', views.watchlist, name='watchlist'),
      path('add_to_watchlist/<int:pk>/', views.add_to_watchlist, name='add_to_watchlist'),
      path('remove_from_watchlist/<int:pk>/', views.remove_from_watchlist, name='remove_from_watchlist'),
+     path('search/', views.search, name='search'),
     #  path('listing/<int:pk>/bid/', views.bid, name='bid'),
     #  path('listing/<int:pk>/close/', views.close, name='close'),
     #  path('listing/<int:pk>/comment/', views.comment, name='comment'),
