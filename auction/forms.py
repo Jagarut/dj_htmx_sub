@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django import forms
-from .models import AuctionListing
+from .models import AuctionListing, Comment
 
 
 class CreateListingForm(forms.ModelForm):
@@ -26,3 +26,17 @@ class CreateListingForm(forms.ModelForm):
         if end_date <= timezone.now():
             raise forms.ValidationError("End date must be in the future.")
         return end_date
+    
+    
+    
+class CommentCreateForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+        widgets = {
+            'text': forms.TextInput(attrs={'placeholder': 'Add a comment...', 
+                                           'class': 'w-full p-3 border rounded-md'}),
+        }
+        labels = {
+            'text': '',
+        }

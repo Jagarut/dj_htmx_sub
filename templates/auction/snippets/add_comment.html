@@ -1,0 +1,14 @@
+  
+  <div class="container mx-auto p-4 max-w-4xl bg-white shadow-md rounded my-4">
+    <!--autocomplete="off" is used to prevent the browser from remembering the comment text and autofilling it next time the user visits the page.-->
+    <form method="post" class="flex items-center p-4" autocomplete="off" action="{% url 'add_comment' listing.id %}">
+    {% csrf_token %}
+      <div class="w-full  p-2">{{ commentform }}</div>
+      <button
+        type="submit" value="submit"
+        class="w-1/4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 border rounded-md"
+      >
+        Add Comment
+      </button>
+    </form>
+  </div>

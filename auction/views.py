@@ -1,16 +1,17 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib import messages
 from django.utils import timezone
 from .utils import item_in_watchlist
-from .forms import CreateListingForm
+from .forms import CreateListingForm, CommentCreateForm
 from .models import AuctionListing, Bid, Comment, WatchList
 
 # Create your views here.
 def home(request):
     listings = AuctionListing.objects.all()
+    
     # print('listingssssss:', listings)
     context = {
         'listings': listings,
@@ -51,8 +52,16 @@ def create_listing(request):
 
 def listing_detail(request, pk):
     listing = AuctionListing.objects.get(pk=pk)
+    commentform = CommentCreateForm()
+    comments = listing.comments.all()
+    
     if request.user.is_authenticated:
-        watchlist = WatchList.objects.get(user=request.user)
+        # Get the user's watchlist. If the user does not have a watchlist, create one.
+        # The [0] at the end of the line is needed because get_or_create returns a tuple
+        # where the first element is the object and the second element is a boolean
+        # indicating whether the object was created or not. We are only interested in the
+        # object itself, so we use [0] to get the first element of the tuple.
+        watchlist = WatchList.objects.get_or_create(user=request.user)[0]
         watch_list = watchlist.items.all()
     else:
         watch_list = []
@@ -60,6 +69,8 @@ def listing_detail(request, pk):
     context = item_in_watchlist(listing, watch_list, pk)
     context.update({
         'listing': listing,
+        'commentform': commentform,
+        'comments': comments,
     })
     
     return render(request, 'auction/listing_detail.html', context)
@@ -85,14 +96,20 @@ def place_bid(request, pk):
  
 @login_required        
 def watchlist(request):
-    watchlist = WatchList.objects.get(user=request.user)
+    watchlist = WatchList.objects.get_or_create(user=request.user)[0]
     watch_list = watchlist.items.all()
     
+    if not watch_list:
+        title = 'Tu lista de seguimiento está vacía'
+    else:
+        title = 'Watchlist'
+        
     context = {
         'listings': watch_list,
-        'title': 'Watchlist',
+        'title': title,
     }
     return render(request, 'auction/home.html', context)
+    
 
 @login_required
 def add_to_watchlist(request, pk):
@@ -134,4 +151,40 @@ def search(request):
         context['title'] = 'No results found'
 
     return render(request, 'auction/home.html', context)
+
+@login_required
+def add_comment(request, pk):
+    listing = get_object_or_404(AuctionListing, pk=pk)
+    print(listing)
+    if request.method == 'POST':
+        
+        print(request.user)
+        print(request.POST['text'])
+        listing.add_comment(request.user, request.POST['text'])
+        return redirect('listing_detail', pk=pk)
+    else:
+        # Create an empty form
+        commentform = CommentCreateForm()
     
+    context = {
+        'listing': listing,
+        'commentform': commentform
+    }
+    
+   
+    return render(request, 'auction/listing_detail.html', context)
+
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk, user=request.user)
+ 
+    if request.method == 'DELETE':
+        comment.delete()
+        messages.success(request, 'Your comment has been deleted successfully!')
+        return HttpResponse('')
+    else:
+        messages.error(request, 'There was an error deleting your comment.')
+        return HttpResponse('')
+    
+
+def edit_comment(request, comment_pk):
+    pass
