@@ -5,7 +5,8 @@
            hx-post="{% url 'add_comment' listing.id %}"
            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
            hx-target="#comments"
-           hx-swap="afterbegin">
+           hx-swap="afterbegin"
+           _="on htmx:afterRequest reset() me">
     
       <div class="w-full  p-2">{{ commentform }}</div>
       <button
