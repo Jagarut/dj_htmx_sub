@@ -108,7 +108,11 @@
     {% include "auction/snippets/add_comment.html" %}
   {% endif %}
 </div>
-{% include "auction/snippets/comments.html" %}
+<div id="comments">
+  {% for comment in comments %}
+    {% include "auction/snippets/comments.html" %}
+  {% endfor %}
+</div>
 
 
 {% endblock content %}

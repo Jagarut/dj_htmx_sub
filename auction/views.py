@@ -157,11 +157,9 @@ def add_comment(request, pk):
     listing = get_object_or_404(AuctionListing, pk=pk)
     print(listing)
     if request.method == 'POST':
-        
-        print(request.user)
-        print(request.POST['text'])
         listing.add_comment(request.user, request.POST['text'])
-        return redirect('listing_detail', pk=pk)
+        comment = Comment.objects.latest('created_at')
+        return render(request, 'auction/snippets/comments.html', {'comment': comment})
     else:
         # Create an empty form
         commentform = CommentCreateForm()
