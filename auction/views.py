@@ -11,11 +11,19 @@ from .models import AuctionListing, Bid, Comment, WatchList
 # Create your views here.
 def home(request):
     listings = AuctionListing.objects.all()
-    
-    # print('listingssssss:', listings)
+    listings = listings.filter(is_active=True)
     context = {
         'listings': listings,
         'title': 'Active Auctions'
+    }
+    return render(request, 'auction/home.html', context)
+
+def inactive(request):
+    listings = AuctionListing.objects.all()
+    listings = listings.filter(is_active=False)
+    context = {
+        'listings': listings,
+        'title': 'Inactive Auctions'
     }
     return render(request, 'auction/home.html', context)
 
@@ -186,3 +194,20 @@ def delete_comment(request, pk):
 
 def edit_comment(request, comment_pk):
     pass
+
+def close_bid(request, pk):
+    print(request.method)
+    
+    if request.method == 'POST':
+        listing = get_object_or_404(AuctionListing, pk=pk)
+        if listing.is_active:
+            listing.is_active = False
+            listing.save()
+            return redirect('listing_detail', pk=listing.pk)
+        
+        
+def open_bid(request, pk):
+    listing = get_object_or_404(AuctionListing, pk=pk)
+    listing.is_active = True
+    listing.save()
+    return redirect('listing_detail', pk=listing.pk)        
