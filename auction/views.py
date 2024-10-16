@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.sessions.models import Session
 from django.urls import reverse
 from django.contrib import messages
 from django.utils import timezone
@@ -197,17 +198,25 @@ def edit_comment(request, comment_pk):
 
 def close_bid(request, pk):
     print(request.method)
+    listing = get_object_or_404(AuctionListing, pk=pk)
+    winer = Bid.objects.filter(auction=listing).order_by('-amount').first()
+    listing.winner = winer.bidder
+    listing.save()
+    print(winer.amount)
+    print(winer.bidder)
     
     if request.method == 'POST':
-        listing = get_object_or_404(AuctionListing, pk=pk)
         if listing.is_active:
             listing.is_active = False
             listing.save()
+            messages.success(request, f'{listing.winner.username.capitalize()} ganó la puja con ${winer.amount}')
+            # request.session['winer'] = f'{winer.bidder.username.capitalize()} ha sido el ganador'
             return redirect('listing_detail', pk=listing.pk)
         
         
 def open_bid(request, pk):
     listing = get_object_or_404(AuctionListing, pk=pk)
+    
     listing.is_active = True
     listing.save()
     return redirect('listing_detail', pk=listing.pk)        
